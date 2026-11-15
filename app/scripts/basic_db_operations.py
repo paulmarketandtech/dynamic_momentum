@@ -11,36 +11,22 @@ cur = conn.cursor()
 all_tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
 # print(all_tables.fetchall())
 
-query_ohlc = """
-SELECT ticker, date, open, high, low, close
+tickers = ["QQQ", "SPY", "NVDA", "AAPL"]
+start_date = "2026-01-01"
+placeholders = ",".join(["?"] * len(tickers))
+query_benchmark = f"""
+SELECT date, ticker, close
 FROM stock_data
+WHERE ticker IN ({placeholders})
+  AND date >= ?
+ORDER BY date ASC;
 """
 
-return_periods = {
-    "ret_week": 5,
-    "ret_month": 21,
-    "ret_3months": 63,
-    "ret_12months": 126,
-}
+raw_df = pd.read_sql_query(query_benchmark, conn, params=(*tickers, start_date))
+raw_df["date"] = pd.to_datetime(raw_df["date"])
 
-df = pd.read_sql_query(
-    query_ohlc,
-    conn,
-)
+dupes = raw_df[raw_df.duplicated(subset=["date", "ticker"], keep=False)]
+print(f"Found {len(dupes)} duplicate rows")
 
-df["date"] = pd.to_datetime(df["date"])
-df = df.sort_values(["ticker", "date"]).reset_index(drop=True)
-
-grouped_close = df.groupby("ticker")["close"]
-
-for col_name, days in return_periods.items():
-    df[col_name] = grouped_close.pct_change(periods=days)
-
-latest_date = df["date"].max()
-latest_momentum = df[df["date"] == latest_date].sort_values(
-    "ret_3months", ascending=False
-)
-latest_momentum[
-    ["ticker", "close", "ret_week", "ret_month", "ret_3months", "ret_12months"]
-].head(15)
-print(latest_momentum)
+# Keep the latest entry for each (date, ticker) pair
+clean_df = raw_df.drop_duplicates(subset=["date", "ticker"], keep="last")

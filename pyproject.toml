@@ -20,4 +20,5 @@ packages = ["app"]
 [dependency-groups]
 dev = [
     "marimo>=0.25.2",
+    "pytest>=9.2.0",
 ]
