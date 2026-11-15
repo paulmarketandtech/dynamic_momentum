@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -14,3 +15,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+conn = sqlite3.connect(settings.DATABASE_URL)
+cur = conn.cursor()
