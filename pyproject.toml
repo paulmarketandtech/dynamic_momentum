@@ -4,4 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pandas>=3.1.1",
+    "plotly>=7.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "marimo>=0.25.2",
+]
