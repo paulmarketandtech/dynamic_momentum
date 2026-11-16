@@ -1,0 +1,62 @@
+<div class="grid">
+    <!-- 52-Week Highs -->
+    <article>
+        <header>
+            <strong>52-Week Highs</strong>
+            <span class="badge-count">({{ highs|length }} in last {{ n_days }}d)</span>
+        </header>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Date</th>
+                        <th>High</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in highs %}
+                    <tr>
+                        <td><strong>{{ row.ticker }}</strong></td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ "%.2f"|format(row.value) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3">No highs found in this window.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <!-- 52-Week Lows -->
+    <article>
+        <header>
+            <strong>52-Week Lows</strong>
+            <span class="badge-count">({{ lows|length }} in last {{ n_days }}d)</span>
+        </header>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Date</th>
+                        <th>Low</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in lows %}
+                    <tr>
+                        <td><strong>{{ row.ticker }}</strong></td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ "%.2f"|format(row.value) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3">No lows found in this window.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</div>
+
