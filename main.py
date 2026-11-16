@@ -1,6 +1,19 @@
-def main():
-    print("Hello from dynamic-momentum!")
+import fastapi_swagger_dark as fsd
+from fastapi import APIRouter, FastAPI
+
+from app.routers import public
+
+app = FastAPI(docs_url=None)
+router = APIRouter()
+
+fsd.install(router)
+app.include_router(router)
+app.include_router(public.router)
 
 
-if __name__ == "__main__":
-    main()
+@app.get("/health")
+def health_check():
+    try:
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "degraded", "db": str(e)}
