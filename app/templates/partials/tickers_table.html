@@ -1,0 +1,33 @@
+<p class="badge-count">Showing {{ rows|length }} of {{ total_count }} stocks</p>
+<div style="max-height: 450px; overflow-y: auto;">
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Market Cap ($B)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td><strong>{{ row.ticker }}</strong></td>
+                <td>{{ "%.2f"|format(row.market_cap / 1_000_000_000) if row.market_cap else "-" }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2">No matching tickers.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if rows|length < total_count %}
+<button
+    class="outline secondary"
+    style="width: 100%; margin-top: 0.5rem;"
+    hx-get="/partials/tickers?mc={{ mc }}&q={{ q }}&limit={{ limit + 50 }}"
+    hx-target="#tickers-container"
+    hx-swap="innerHTML">
+    Show 50 More ({{ total_count - rows|length }} remaining)
+</button>
+{% endif %}
+

@@ -19,6 +19,7 @@ def get_list_of_ticker_gt_df(
     mc: int = 2_000_000_000, conn: sqlite3.Connection = Depends(get_db)
 ):
     df = select_list_of_tickers_gt_df(conn, mc)
+    print(len(df))
     return df.to_dict(orient="records")
 
 

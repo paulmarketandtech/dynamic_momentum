@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Screener</title>
+    <!-- Pico.css (Classless Dark Mode) -->
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <!-- HTMX -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        /* Compact table spacing for dense financial data */
+        table { font-size: 0.875rem; }
+        th, td { padding: 0.45rem 0.6rem; }
+        .badge-count { font-size: 0.8rem; opacity: 0.75; margin-left: 0.5rem; }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header style="padding: 1rem 0 0.5rem 0;">
+            <h3 style="margin-bottom: 0;">Market Pulse & Screeners</h3>
+        </header>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
+
