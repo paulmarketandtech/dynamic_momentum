@@ -1,42 +1,33 @@
-import os
 import sqlite3
-from pathlib import Path
 
 import pandas as pd
-from dotenv import load_dotenv
 from pandas import DataFrame
 
-load_dotenv(Path(__file__).resolve().parents[2] / ".env")
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# cur = conn.cursor()
+# load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
-"""
-def select_list_of_tickers_gt(mc: int = 2000000000):
-    res = cur.execute(
-        f"SELECT ticker, market_cap FROM 'extra_stock_metrics' WHERE market_cap > '{mc}';"
+# RAW SQL version
+def select_list_of_tickers_gt(conn: sqlite3.Connection, mc: int = 2_000_000_000):
+    cur = conn.execute(
+        "SELECT ticker, market_cap FROM extra_stock_metrics WHERE market_cap > ?",
+        (mc,),
     )
-    query_result = res.fetchall()
-    return query_result
-"""
+    # [dict(row) for row in ...] so FastAPI returns nice JSON
+    return [dict(row) for row in cur.fetchall()]
 
 
-def select_list_of_tickers_gt(mc: int = 2_000_000_000):
-    conn = sqlite3.connect(DATABASE_URL)
-    try:
-        cur = conn.cursor()
-        res = cur.execute(
-            "SELECT ticker, market_cap FROM extra_stock_metrics WHERE market_cap > ?",
-            (mc,),
-        )
-        return res.fetchall()
-    finally:
-        conn.close()
+# PANDAS version - same SQL, same conn
+def select_list_of_tickers_gt_df(
+    conn: sqlite3.Connection, mc: int = 2_000_000_000
+) -> pd.DataFrame:
+    return pd.read_sql_query(
+        "SELECT ticker, market_cap FROM extra_stock_metrics WHERE market_cap > ?",
+        conn,
+        params=(mc,),
+    )
 
 
-def get_52week_extremes() -> DataFrame:
+def get_52week_extremes(conn: sqlite3.Connection) -> DataFrame:
     query = """
     SELECT ticker, fifty_two_week_high_value, date_52week_high,
     fifty_two_week_low_value, date_52week_low
@@ -54,7 +45,14 @@ def select_new_52week_extremes(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     latest_low_date = df["date_52week_low"].max()
 
     latest_high_df = df[df["date_52week_high"] == latest_high_date].copy()
+    latest_high_df = latest_high_df[
+        ["ticker", "fifty_two_week_high_value", "date_52week_high"]
+    ]
+
     latest_low_df = df[df["date_52week_low"] == latest_low_date].copy()
+    latest_low_df = latest_low_df[
+        ["ticker", "fifty_two_week_low_value", "date_52week_low"]
+    ]
 
     return latest_high_df, latest_low_df
 
