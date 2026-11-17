@@ -14,7 +14,7 @@ from app.analytics.ytd_chart import build_ytd_chart_json
 from app.db_storage.database import get_db
 from app.dependencies import get_metrics_repo
 
-router = APIRouter(include_in_schema=False)
+router = APIRouter(prefix="/web")  # , include_in_schema=False)
 
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
