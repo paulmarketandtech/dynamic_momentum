@@ -1,6 +1,40 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- SECTION 1: YTD CUMULATIVE RETURN CHART -->
+<details open>
+    <summary><strong>YTD Cumulative Return (SPY & QQQ Benchmarks)</strong></summary>
+    <form class="control-row"
+          hx-get="/partials/ytd-chart"
+          hx-target="#ytd-chart-container"
+          hx-swap="innerHTML">
+        <div style="flex: 1; min-width: 240px;">
+            <label for="extra_tickers">Compare Extra Tickers (comma-separated)</label>
+            <input type="text" id="extra_tickers" name="tickers"
+                   value="{{ extra_tickers }}"
+                   placeholder="e.g. NVDA, AAPL, MSFT">
+        </div>
+        <div>
+            <button type="submit">Plot Chart</button>
+        </div>
+        {% if extra_tickers %}
+        <div>
+            <button type="button" class="secondary outline"
+                    hx-get="/partials/ytd-chart?tickers="
+                    hx-target="#ytd-chart-container"
+                    onclick="document.getElementById('extra_tickers').value=''">
+                Reset
+            </button>
+        </div>
+        {% endif %}
+    </form>
+
+    <div id="ytd-chart-container">
+        {% include "partials/ytd_chart.html" %}
+    </div>
+</details>
+
+<hr>
 <!-- SECTION 1: 52-WEEK BREAKOUTS -->
 <details open>
     <summary><strong>52-Week Breakouts</strong></summary>

@@ -19,3 +19,6 @@ data/
 # Tests
 scratchpad/
 
+# pico css
+pico*
+!pico.min.css
