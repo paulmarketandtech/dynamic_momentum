@@ -1,7 +1,83 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- SECTION 1: YTD CUMULATIVE RETURN CHART -->
+<!-- SECTION 1: 52-WEEK BREAKOUTS -->
+<details open>
+    <summary><strong>52-Week Breakouts</strong></summary>
+    <div style="max-width: 220px; margin-bottom: 1rem;">
+        <label for="n_days">Lookback Window</label>
+        <select id="n_days" name="n"
+                hx-get="/partials/breakouts"
+                hx-target="#breakouts-container"
+                hx-trigger="change">
+            <option value="1">Last 1 Day</option>
+            <option value="3">Last 3 Days</option>
+            <option value="5" selected>Last 5 Days</option>
+            <option value="10">Last 10 Days</option>
+        </select>
+    </div>
+
+    <div id="breakouts-container">
+        {% include "partials/breakouts_table.html" %}
+    </div>
+</details>
+
+<hr>
+
+<!-- SECTION 2: YTD RETURNS -->
+<details open>
+    <summary><strong>YTD Returns</strong></summary>
+    <form class="grid"
+          hx-get="/partials/tickers"
+          hx-target="#tickers-container"
+          hx-trigger="change, keyup delay:300ms from:find input">
+        <div>
+            <label for="mc">Min Market Cap ($)</label>
+            <select id="mc" name="mc">
+                <option value="2000000000" selected>$2B+ (Mid/Large)</option>
+                <option value="10000000000">$10B+ (Large Cap)</option>
+                <option value="50000000000">$50B+ (Mega Cap)</option>
+            </select>
+        </div>
+    </form>
+
+    <div id="tickers-container">
+        {% include "partials/ytd_returns.html" %}
+    </div>
+</details>
+
+<hr>
+
+
+<!-- SECTION 3: MARKET CAP FILTER -->
+<details open>
+    <summary><strong>Universe Filter (Market Cap)</strong></summary>
+    <form class="grid"
+          hx-get="/partials/tickers"
+          hx-target="#tickers-container"
+          hx-trigger="change, keyup delay:300ms from:find input">
+        <div>
+            <label for="mc">Min Market Cap ($)</label>
+            <select id="mc" name="mc">
+                <option value="2000000000" selected>$2B+ (Mid/Large)</option>
+                <option value="10000000000">$10B+ (Large Cap)</option>
+                <option value="50000000000">$50B+ (Mega Cap)</option>
+            </select>
+        </div>
+        <div>
+            <label for="q">Search Ticker</label>
+            <input type="search" id="q" name="q" placeholder="e.g. NVDA, AAPL...">
+        </div>
+    </form>
+
+    <div id="tickers-container">
+        {% include "partials/tickers_table.html" %}
+    </div>
+</details>
+
+<hr>
+
+<!-- SECTION 4: YTD CUMULATIVE RETURN CHART -->
 <details open>
     <summary><strong>YTD Cumulative Return (SPY & QQQ Benchmarks)</strong></summary>
     <form class="control-row"
@@ -35,53 +111,6 @@
 </details>
 
 <hr>
-<!-- SECTION 1: 52-WEEK BREAKOUTS -->
-<details open>
-    <summary><strong>52-Week Breakouts</strong></summary>
-    <div style="max-width: 220px; margin-bottom: 1rem;">
-        <label for="n_days">Lookback Window</label>
-        <select id="n_days" name="n"
-                hx-get="/partials/breakouts"
-                hx-target="#breakouts-container"
-                hx-trigger="change">
-            <option value="1">Last 1 Day</option>
-            <option value="3">Last 3 Days</option>
-            <option value="5" selected>Last 5 Days</option>
-            <option value="10">Last 10 Days</option>
-        </select>
-    </div>
 
-    <div id="breakouts-container">
-        {% include "partials/breakouts_table.html" %}
-    </div>
-</details>
-
-<hr>
-
-<!-- SECTION 2: MARKET CAP FILTER -->
-<details open>
-    <summary><strong>Universe Filter (Market Cap)</strong></summary>
-    <form class="grid"
-          hx-get="/partials/tickers"
-          hx-target="#tickers-container"
-          hx-trigger="change, keyup delay:300ms from:find input">
-        <div>
-            <label for="mc">Min Market Cap ($)</label>
-            <select id="mc" name="mc">
-                <option value="2000000000" selected>$2B+ (Mid/Large)</option>
-                <option value="10000000000">$10B+ (Large Cap)</option>
-                <option value="50000000000">$50B+ (Mega Cap)</option>
-            </select>
-        </div>
-        <div>
-            <label for="q">Search Ticker</label>
-            <input type="search" id="q" name="q" placeholder="e.g. NVDA, AAPL...">
-        </div>
-    </form>
-
-    <div id="tickers-container">
-        {% include "partials/tickers_table.html" %}
-    </div>
-</details>
 {% endblock %}
 

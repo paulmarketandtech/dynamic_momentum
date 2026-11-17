@@ -1,0 +1,35 @@
+<p class="badge-count">Showing {{ rows|length }} of {{ total_count }} stocks</p>
+<div style="max-height: 450px; overflow-y: auto;">
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>As Of Date</th>
+                <th>YTD Return (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in data_returns %}
+            <tr>
+                <td><strong>{{ record.ticker }}</strong></td>
+                <td><strong>{{ record.end_date.strftime('%Y-%m-%d') }}</strong></td>
+                <td>{{ "%.2f"|format(record.return_pct * 100) if record.return_pct else "-" }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2">No matching tickers.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if rows|length < total_count %}
+<button
+    class="outline secondary"
+    style="width: 100%; margin-top: 0.5rem;"
+    hx-get="/partials/tickers?mc={{ mc }}&q={{ q }}&limit={{ limit + 50 }}"
+    hx-target="#tickers-container"
+    hx-swap="innerHTML">
+    Show 50 More ({{ total_count - rows|length }} remaining)
+</button>
+{% endif %}
+
