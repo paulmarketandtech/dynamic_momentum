@@ -4,7 +4,7 @@ import fastapi_swagger_dark as fsd
 from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from app.routers import public, web
+from app.routers import public, returns, web
 
 app = FastAPI(docs_url=None)
 router = APIRouter()
@@ -17,6 +17,7 @@ fsd.install(router)
 app.include_router(router)
 app.include_router(public.router)
 app.include_router(web.router)
+app.include_router(returns.router)
 
 
 @app.get("/health")
