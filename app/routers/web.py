@@ -10,6 +10,7 @@ from app.analytics.list_of_tickers_generator import (
     find_breakouts,
     select_list_of_tickers_gt_df,
 )
+from app.analytics.ytd_chart import build_ytd_chart_json
 from app.db_storage.database import get_db
 from app.dependencies import get_metrics_repo
 
@@ -46,12 +47,15 @@ def dashboard(
     conn: sqlite3.Connection = Depends(get_db),
     repo: MetricsRepository = Depends(get_metrics_repo),
 ):
+    chart_json = build_ytd_chart_json(conn)
     highs, lows = _query_breakouts(repo, n=5)
     rows, total_count = _query_tickers(conn, mc=2_000_000_000, q="", limit=50)
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={
+            "chart_json": chart_json,
+            "extra_tickers": "",
             "n_days": 5,
             "highs": highs,
             "lows": lows,
@@ -61,6 +65,21 @@ def dashboard(
             "q": "",
             "limit": 50,
         },
+    )
+
+
+@router.get("/partials/ytd-chart", response_class=HTMLResponse)
+def partial_ytd_chart(
+    request: Request,
+    tickers: str = "",
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    extra_list = [t.strip() for t in tickers.split(",") if t.strip()]
+    chart_json = build_ytd_chart_json(conn, extra_tickers=extra_list)
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/ytd_chart.html",
+        context={"chart_json": chart_json},
     )
 
 
