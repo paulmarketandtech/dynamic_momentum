@@ -55,7 +55,7 @@
     <div id="shell" class="app-shell">
         <!-- LEFT SIDEBAR -->
         <aside class="sidebar">
-            <h5 style="margin-bottom: 1rem;">Momentum Lab</h5>
+            <h5 style="margin-bottom: 1rem;">Momentum</h5>
             <nav>
                 <ul>
                     <li>
@@ -63,7 +63,7 @@
                            hx-get="/web/views/overview"
                            hx-target="#main-stage"
                            onclick="setActiveTab(this)">
-                           Benchmark & Breakouts
+                           Breakouts
                         </a>
                     </li>
                     <li>
@@ -78,6 +78,13 @@
                            hx-target="#main-stage"
                            onclick="setActiveTab(this)">
                            Stock Universe (MC)
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="/web/views/charts"
+                           hx-target="#main-stage"
+                           onclick="setActiveTab(this)">
+                           Charts
                         </a>
                     </li>
                     <!-- Add future tabs right here: Custom Returns, Correlations, etc. -->

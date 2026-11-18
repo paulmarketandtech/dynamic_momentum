@@ -1,0 +1,18 @@
+<h4>Benchmark YTD</h4>
+
+<article>
+    <header><strong>YTD Cumulative Return (SPY & QQQ Benchmarks)</strong></header>
+    <form class="control-row"
+          hx-get="/web/partials/ytd-chart"
+          hx-target="#ytd-chart-container">
+        <div style="flex: 1; min-width: 240px;">
+            <label for="extra_tickers">Compare Extra Tickers</label>
+            <input type="text" id="extra_tickers" name="tickers" placeholder="e.g. NVDA, AAPL, MSFT">
+        </div>
+        <div><button type="submit">Plot Chart</button></div>
+    </form>
+    <div id="ytd-chart-container">
+        {% include "partials/ytd_chart.html" %}
+    </div>
+</article>
+

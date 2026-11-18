@@ -102,7 +102,18 @@ def view_universe(
     )
 
 
-# Keep your existing /partials/* endpoints right below these!
+@router.get("/views/charts", response_class=HTMLResponse)
+def view_charts(
+    request: Request,
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    chart_json = build_ytd_chart_json(conn)
+    return templates.TemplateResponse(
+        request=request,
+        name="views/charts.html",
+        context={"chart_json": chart_json},
+    )
+
 
 """
 all to be deleted?
