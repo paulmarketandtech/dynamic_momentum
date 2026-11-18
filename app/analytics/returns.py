@@ -21,7 +21,6 @@ def compute_period_returns(prices: DataFrame) -> DataFrame:
     df = df.dropna(subset=["close"])
     df = df[df["close"] > 0]
 
-    # robust even if not sorted: pick actual first/last trading day per ticker
     idx_first = df.groupby("ticker")["date"].idxmin()
     idx_last = df.groupby("ticker")["date"].idxmax()
 

@@ -102,7 +102,7 @@ def partial_ytd_returs(
     start = date(max_date.year, 1, 1)
     return templates.TemplateResponse(
         request=request,
-        name="partials/ytd_returns.html",
+        name="partials/ytd_table.html",
         context=_get_returns(repo, start, max_date, mc),
     )
 
