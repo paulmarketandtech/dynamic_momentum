@@ -43,6 +43,69 @@ def _query_breakouts(repo: MetricsRepository, n: int):
     return highs, lows
 
 
+# 1. EMPTY SHELL ROUTE (Zero DB queries, zero giant context!)
+@router.get("/", response_class=HTMLResponse)
+def dashboard(request: Request):
+    return templates.TemplateResponse(request=request, name="base.html")
+
+
+# 2. TAB VIEWS (Each tab loads only what it needs)
+@router.get("/views/overview", response_class=HTMLResponse)
+def view_overview(
+    request: Request,
+    conn: sqlite3.Connection = Depends(get_db),
+    repo: MetricsRepository = Depends(get_metrics_repo),
+):
+    chart_json = build_ytd_chart_json(conn)
+    highs, lows = _query_breakouts(repo, n=5)
+    return templates.TemplateResponse(
+        request=request,
+        name="views/overview.html",
+        context={"chart_json": chart_json, "n_days": 5, "highs": highs, "lows": lows},
+    )
+
+
+@router.get("/views/standard-returns", response_class=HTMLResponse)
+def view_standard_returns(
+    request: Request,
+    repo: MetricsRepository = Depends(get_metrics_repo),
+):
+    max_date = repo.get_max_trading_date()
+    start = date(max_date.year, 1, 1)
+    returns_dict = _get_returns(repo, start, max_date, mc=2_000_000_000)
+    return templates.TemplateResponse(
+        request=request,
+        name="views/standard_returns.html",
+        context={
+            "end_date": returns_dict["data"],
+            "data_returns": returns_dict["data"],
+        },
+    )
+
+
+@router.get("/views/universe", response_class=HTMLResponse)
+def view_universe(
+    request: Request,
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    rows, total_count = _query_tickers(conn, mc=2_000_000_000, q="", limit=50)
+    return templates.TemplateResponse(
+        request=request,
+        name="views/universe.html",
+        context={
+            "rows": rows,
+            "total_count": total_count,
+            "mc": 2_000_000_000,
+            "q": "",
+            "limit": 50,
+        },
+    )
+
+
+# Keep your existing /partials/* endpoints right below these!
+
+"""
+all to be deleted?
 @router.get("/", response_class=HTMLResponse)
 def dashboard(
     request: Request,
@@ -75,6 +138,7 @@ def dashboard(
             "data_returns": returns_dict["data"],
         },
     )
+"""
 
 
 @router.get("/partials/breakouts", response_class=HTMLResponse)

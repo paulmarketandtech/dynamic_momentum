@@ -1,0 +1,24 @@
+<h4>Stock Universe Filter</h4>
+<form class="control-row"
+      hx-get="/partials/tickers"
+      hx-target="#tickers-container"
+      hx-trigger="submit, change from:#mc, keyup changed delay:350ms from:#q">
+    <div style="min-width: 200px;">
+        <label for="mc">Min Market Cap ($)</label>
+        <select id="mc" name="mc">
+            <option value="2000000000" selected>$2B+</option>
+            <option value="10000000000">$10B+</option>
+            <option value="50000000000">$50B+</option>
+        </select>
+    </div>
+    <div style="flex: 1; min-width: 200px;">
+        <label for="q">Search Ticker</label>
+        <input type="search" id="q" name="q" placeholder="e.g. NVDA...">
+    </div>
+    <div><button type="submit" class="secondary">Filter</button></div>
+</form>
+
+<div id="tickers-container">
+    {% include "partials/tickers_table.html" %}
+</div>
+
