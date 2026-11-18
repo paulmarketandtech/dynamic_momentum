@@ -34,7 +34,7 @@ class MetricsRepository:
 
     def fetch_prices(self, start: date, end: date, mc: int) -> pd.DataFrame:
         query = """
-        SELECT s.ticker, s.date, s.close
+        SELECT s.ticker, s.date, s.close, s.open
         FROM stock_data s
         JOIN extra_stock_metrics m ON m.ticker = s.ticker
         WHERE m.market_cap > ?

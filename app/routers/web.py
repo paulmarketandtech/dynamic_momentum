@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Request
@@ -13,6 +14,7 @@ from app.analytics.list_of_tickers_generator import (
 from app.analytics.ytd_chart import build_ytd_chart_json
 from app.db_storage.database import get_db
 from app.dependencies import get_metrics_repo
+from app.routers.returns import _get_returns
 
 router = APIRouter(prefix="/web")  # , include_in_schema=False)
 
@@ -50,6 +52,11 @@ def dashboard(
     chart_json = build_ytd_chart_json(conn)
     highs, lows = _query_breakouts(repo, n=5)
     rows, total_count = _query_tickers(conn, mc=2_000_000_000, q="", limit=50)
+
+    max_date = repo.get_max_trading_date()
+    start = date(max_date.year, 1, 1)
+    returns_dict = _get_returns(repo, start, max_date, mc=2_000_000_000)
+
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -64,22 +71,9 @@ def dashboard(
             "mc": 2_000_000_000,
             "q": "",
             "limit": 50,
+            "end_date": returns_dict["data"],
+            "data_returns": returns_dict["data"],
         },
-    )
-
-
-@router.get("/partials/ytd-chart", response_class=HTMLResponse)
-def partial_ytd_chart(
-    request: Request,
-    tickers: str = "",
-    conn: sqlite3.Connection = Depends(get_db),
-):
-    extra_list = [t.strip() for t in tickers.split(",") if t.strip()]
-    chart_json = build_ytd_chart_json(conn, extra_tickers=extra_list)
-    return templates.TemplateResponse(
-        request=request,
-        name="partials/ytd_chart.html",
-        context={"chart_json": chart_json},
     )
 
 
@@ -94,6 +88,22 @@ def partial_breakouts(
         request=request,
         name="partials/breakouts_table.html",
         context={"n_days": n, "highs": highs, "lows": lows},
+    )
+
+
+@router.get("/partials/ytd-returns", response_class=HTMLResponse)
+def partial_ytd_returs(
+    request: Request,
+    repo: MetricsRepository = Depends(get_metrics_repo),
+    mc: int = 2_000_000_000,
+    limit: int = 50,
+):
+    max_date = repo.get_max_trading_date()
+    start = date(max_date.year, 1, 1)
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/ytd_table.html",
+        context=_get_returns(repo, start, max_date, mc),
     )
 
 
@@ -116,4 +126,19 @@ def partial_tickers(
             "q": q,
             "limit": limit,
         },
+    )
+
+
+@router.get("/partials/ytd-chart", response_class=HTMLResponse)
+def partial_ytd_chart(
+    request: Request,
+    tickers: str = "",
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    extra_list = [t.strip() for t in tickers.split(",") if t.strip()]
+    chart_json = build_ytd_chart_json(conn, extra_tickers=extra_list)
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/ytd_chart.html",
+        context={"chart_json": chart_json},
     )
