@@ -1,0 +1,40 @@
+<h4>Custom Period Returns</h4>
+
+<form class="control-row"
+      hx-get="{{ url_for('partial_custom_returns') }}"
+      hx-target="#custom-returns-container"
+      hx-indicator="#htmx-spinner">
+    <div>
+        <label for="start_date">Start Date</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" required>
+    </div>
+    <div>
+        <label for="end_date">End Date</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" required>
+    </div>
+    <div style="min-width: 170px;">
+        <label for="mc">Min Market Cap</label>
+        <select id="mc" name="mc">
+            <option value="2000000000" {% if mc == 2000000000 %}selected{% endif %}>$2B+ (Mid/Large)</option>
+            <option value="10000000000" {% if mc == 10000000000 %}selected{% endif %}>$10B+ (Large)</option>
+            <option value="50000000000" {% if mc == 50000000000 %}selected{% endif %}>$50B+ (Mega)</option>
+            <option value="100000000000" {% if mc == 100000000000 %}selected{% endif %}>$100B+</option>
+        </select>
+    </div>
+    <div style="min-width: 110px;">
+        <label for="top_n">Rows</label>
+        <select id="top_n" name="top_n">
+            <option value="25" {% if top_n == 25 %}selected{% endif %}>Top 25</option>
+            <option value="50" {% if top_n == 50 %}selected{% endif %}>Top 50</option>
+            <option value="100" {% if top_n == 100 %}selected{% endif %}>Top 100</option>
+        </select>
+    </div>
+    <div>
+        <button type="submit">Calculate</button>
+    </div>
+</form>
+
+<div id="custom-returns-container">
+    {% include "partials/custom_returns_table.html" %}
+</div>
+

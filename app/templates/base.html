@@ -74,6 +74,13 @@
                         </a>
                     </li>
                     <li>
+                        <a hx-get="{{ url_for('view_custom_returns') }}"
+                           hx-target="#main-stage"
+                           onclick="setActiveTab(this)">
+                           Custom Returns
+                        </a>
+                    </li>
+                    <li>
                         <a hx-get="/web/views/universe"
                            hx-target="#main-stage"
                            onclick="setActiveTab(this)">

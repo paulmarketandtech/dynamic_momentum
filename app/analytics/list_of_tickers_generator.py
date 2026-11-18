@@ -46,32 +46,6 @@ class MetricsRepository:
             query, self.conn, params=(mc, start.isoformat(), end.isoformat())
         )
 
-    # TODO: delete
-    def clearing_df(self, df_raw: pd.DataFrame) -> pd.DataFrame:
-        df = df_raw.drop_duplicates(subset=["date", "ticker"], keep="last").copy()
-        df["date"] = pd.to_datetime(df["date"])
-        df = df.sort_values(["ticker", "date"]).reset_index(drop=True)
-        return df
-
-    # TODO: delete
-    def fetch_open_close_for_current_year(
-        self, df_list_of_tickers: pd.DataFrame
-    ) -> pd.DataFrame:
-        tickers = df_list_of_tickers["ticker"].to_list()
-        placeholders = ",".join(["?"] * len(tickers[:10]))
-
-        query = f"""
-        SELECT date, ticker, open, close
-        FROM stock_data
-        WHERE ticker IN ({placeholders})
-        AND strftime('%Y', date) = (SELECT MAX(strftime('%Y', date)) FROM stock_data)
-        ORDER BY date ASC;
-        """
-        df_raw = pd.read_sql_query(query, self.conn, params=tickers[:10])
-        # df = self.clearing_df(df_raw)
-
-        return df_raw
-
 
 def _filter_last_n_dates(df: pd.DataFrame, date_col: str, value_col: str, n: int):
     dates = pd.to_datetime(df[date_col])

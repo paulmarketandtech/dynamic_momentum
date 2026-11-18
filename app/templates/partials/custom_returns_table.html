@@ -1,0 +1,67 @@
+<p class="badge-count">
+    Period: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong>
+    (Min MC: ${{ (mc / 1_000_000_000)|round(1) }}B)
+</p>
+
+<div class="grid">
+    <!-- BEST PERFORMERS (DESCENDING) -->
+    <article>
+        <header>
+            <strong>Top Performers (Best)</strong>
+            <span class="badge-count">({{ best_rows|length }})</span>
+        </header>
+        <div style="max-height: 450px; overflow-y: auto;">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Return (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in best_rows %}
+                    <tr>
+                        <td><strong>{{ row.ticker }}</strong></td>
+                        <td style="color: #4ade80;">
+                            {{ "%+.2f"|format(row.return_pct * 100) }}%
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="2">No data for this date range.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+<!-- WORST PERFORMERS (ASCENDING) -->
+    <article>
+        <header>
+            <strong>Bottom Performers (Worst)</strong>
+            <span class="badge-count">({{ worst_rows|length }})</span>
+        </header>
+        <div style="max-height: 450px; overflow-y: auto;">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Ticker</th>
+                        <th>Return (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in worst_rows %}
+                    <tr>
+                        <td><strong>{{ row.ticker }}</strong></td>
+                        <td style="color: #f87171;">
+                            {{ "%+.2f"|format(row.return_pct * 100) }}%
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="2">No data for this date range.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</div>
+
