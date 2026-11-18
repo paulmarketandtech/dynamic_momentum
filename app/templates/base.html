@@ -4,25 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Market Screener</title>
-    <!-- Pico.css (Classless Dark Mode) -->
     <link rel="stylesheet" href="/static/css/pico.min.css">
-    <!-- HTMX -->
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/plotly.min.js"></script>
     <style>
-        /* Compact table spacing for dense financial data */
+        body { margin: 0; }
+        .app-shell {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            min-height: 100vh;
+            transition: grid-template-columns 0.2s ease;
+        }
+        .app-shell.collapsed {
+            grid-template-columns: 0px 1fr;
+        }
+        .sidebar {
+            background: var(--pico-card-background-color);
+            border-right: 1px solid var(--pico-muted-border-color);
+            padding: 1rem;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .app-shell.collapsed .sidebar {
+            padding: 0;
+            border-right: none;
+        }
+        .sidebar nav ul { display: flex; flex-direction: column; gap: 0.25rem; }
+        .sidebar a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--pico-border-radius);
+            text-decoration: none;
+            color: var(--pico-color);
+            cursor: pointer;
+        }
+        .sidebar a:hover, .sidebar a.active {
+            background: var(--pico-primary-background);
+            color: var(--pico-primary-inverse);
+        }
+        .main-area { padding: 1.25rem 2rem; overflow-x: hidden; }
+        .top-bar { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
         table { font-size: 0.875rem; }
         th, td { padding: 0.45rem 0.6rem; }
         .badge-count { font-size: 0.8rem; opacity: 0.75; margin-left: 0.5rem; }
+        .control-row { display: flex; gap: 0.75rem; align-items: end; flex-wrap: wrap; margin-bottom: 1rem; }
+        .control-row > div { margin-bottom: 0; }
     </style>
 </head>
 <body>
-    <main class="container">
-        <header style="padding: 1rem 0 0.5rem 0;">
-            <h3 style="margin-bottom: 0;">Market Pulse & Screeners</h3>
-        </header>
-        {% block content %}{% endblock %}
-    </main>
+    <div id="shell" class="app-shell">
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar">
+            <h5 style="margin-bottom: 1rem;">Momentum Lab</h5>
+            <nav>
+                <ul>
+                    <li>
+                        <a class="active"
+                           hx-get="/web/views/overview"
+                           hx-target="#main-stage"
+                           onclick="setActiveTab(this)">
+                           Benchmark & Breakouts
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="/web/views/standard-returns"
+                           hx-target="#main-stage"
+                           onclick="setActiveTab(this)">
+                           Standard Returns
+                        </a>
+                    </li>
+                    <li>
+                        <a hx-get="/web/views/universe"
+                           hx-target="#main-stage"
+                           onclick="setActiveTab(this)">
+                           Stock Universe (MC)
+                        </a>
+                    </li>
+                    <!-- Add future tabs right here: Custom Returns, Correlations, etc. -->
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- RIGHT MAIN CONTENT STAGE -->
+        <main class="main-area">
+            <div class="top-bar">
+                <button class="outline secondary"
+                        style="padding: 0.3rem 0.7rem; margin: 0;"
+                        onclick="document.getElementById('shell').classList.toggle('collapsed')">
+                    ☰ Menu
+                </button>
+                <span id="htmx-spinner" class="htmx-indicator">Loading...</span>
+            </div>
+
+            <!-- HTMX automatically loads the default view here on page open -->
+            <div id="main-stage"
+                 hx-get="/web/views/overview"
+                 hx-trigger="load"
+                 hx-indicator="#htmx-spinner">
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function setActiveTab(el) {
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
 </body>
 </html>
-

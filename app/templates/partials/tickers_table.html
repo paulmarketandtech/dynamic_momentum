@@ -24,7 +24,7 @@
 <button
     class="outline secondary"
     style="width: 100%; margin-top: 0.5rem;"
-    hx-get="/partials/tickers?mc={{ mc }}&q={{ q }}&limit={{ limit + 50 }}"
+    hx-get="/web/partials/tickers?mc={{ mc }}&q={{ q }}&limit={{ limit + 50 }}"
     hx-target="#tickers-container"
     hx-swap="innerHTML">
     Show 50 More ({{ total_count - rows|length }} remaining)
