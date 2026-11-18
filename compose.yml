@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    container_name: dynamic-momentum
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+      - ./main.py:/app/main.py
+    command:
+      ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000"]
